@@ -1,59 +1,73 @@
-#include <stdio.h>
-#include "monty.h"  // custom header file
+#include "monty.h"
 
 /**
- * pchar - Print the character at the top of the stack
+ * rotl - Rotate the stack to the top
  * @stack: Double linked list
  * @line_number: File line execution
  */
-void pchar(stack_t **stack, unsigned int line_number)
+void rotl(stack_t **stack, unsigned int line_number)
 {
-	if (!stack || !*stack)
-	{
-		fprintf(stderr, "L%u: can't pchar, stack empty\n", line_number);
-		free_all();
-		exit(EXIT_FAILURE);
-	}
+    stack_t *tm = *stack;
+    (void) line_number;
 
-	if ((*stack)->n < 0 || (*stack)->n > 127)
-	{
-		fprintf(stderr, "L%u: can't pchar, value out of ASCII range\n", line_number);
-		free_all();
-		exit(EXIT_FAILURE);
-	}
-
-	putchar((*stack)->n);
-	putchar('\n');
+    if (!stack || !*stack || !(*stack)->next)
+        return;
+    (*stack)->next->prev = NULL;
+    while (tm->next)
+        tm = tm->next;
+    tm->next = *stack;
+    (*stack) = (*stack)->next;
+    tm->next->next = NULL;
+    tm->next->prev = tm;
 }
 
 /**
- * pstr - Print a string of characters from the stack
+ * rotr - Rotate the stack to the bottom
  * @stack: Double linked list
  * @line_number: File line execution
  */
-void pstr(stack_t **stack, unsigned int line_number)
+void rotr(stack_t **stack, unsigned int line_number)
 {
-	stack_t *tmp = *stack;
-	(void) line_number;
+    stack_t *tmp;
+    (void) line_number;
 
-	if (!stack || !*stack)
-	{
-		putchar('\n');
-		return;
-	}
+    if (!stack || !*stack || !(*stack)->next)
+        return;
 
-	while (tmp)
-	{
-		if (tmp->n <= 0 || tmp->n > 127)
-			break;
+    tmp = *stack;
+    while (tmp->next)
+        tmp = tmp->next;
 
-		putchar(tmp->n);
+    tmp->next = *stack;
+    tmp->prev->next = NULL;
+    tmp->prev = NULL;
 
-		if (tmp->n == 0)
-			break;
+    (*stack)->prev = tmp;
+    *stack = tmp;
+}
 
-		tmp = tmp->next;
-	}
+/**
+ * stack - Set the stack mode (LIFO)
+ * @stack: Double linked list
+ * @line_number: File line execution
+ */
+void stack(stack_t **stack, unsigned int line_number)
+{
+    (void) line_number;
+    (void) stack;
 
-	putchar('\n');
+    var.MODE = 0;
+}
+
+/**
+ * queue - Set the queue mode (FIFO)
+ * @stack: Double linked list
+ * @line_number: File line execution
+ */
+void queue(stack_t **stack, unsigned int line_number)
+{
+    (void) line_number;
+    (void) stack;
+
+    var.MODE = 1;
 }

@@ -1,74 +1,82 @@
 #include "monty.h"
 
 /**
- * rotl - s
+ * swap - Swap the top two elements of the stack
  * @stack: Double linked list
  * @line_number: File line execution
  */
-void rotl(stack_t **stack, unsigned int line_number)
+void swap(stack_t **stack, unsigned int line_number)
 {
-	stack_t *tm = *stack;
-	(void) line_number;
+    int tmp;
 
-	if (!stack || !*stack || !(*stack)->next)
-		return;
-	(*stack)->next->prev = NULL;
-	while (tm->next)
-		tm = tm->next;
-	tm->next = *stack;
-	(*stack) = (*stack)->next;
-	tm->next->next = NULL;
-	tm->next->prev = tm;
+    if (!*stack || !(*stack)->next)
+    {
+        fprintf(stderr, "L%u: can't swap, stack too short\n",
+            line_number);
+        free_all();
+        exit(EXIT_FAILURE);
+    }
+    tmp = (*stack)->n;
+    (*stack)->n = (*stack)->next->n;
+    (*stack)->next->n = tmp;
 }
 
 /**
- * rotr - s
+ * add - Add the top two elements of the stack
  * @stack: Double linked list
  * @line_number: File line execution
  */
-void rotr(stack_t **stack, unsigned int line_number)
+void add(stack_t **stack, unsigned int line_number)
 {
-	stack_t *tmp;
-	(void) line_number;
-
-	if (!stack || !*stack || !(*stack)->next)
-		return;
-
-	tmp = *stack;
-	while (tmp->next)
-		tmp = tmp->next;
-
-	tmp->next = *stack;
-	tmp->prev->next = NULL;
-	tmp->prev = NULL;
-
-	(*stack)->prev = tmp;
-	*stack = tmp;
-
+    if (!*stack || !(*stack)->next)
+    {
+        fprintf(stderr, "L%u: can't add, stack too short\n",
+            line_number);
+        free_all();
+        exit(EXIT_FAILURE);
+    }
+    (*stack)->next->n = (*stack)->next->n + (*stack)->n;
+    pop(stack, line_number);
 }
 
 /**
- * stack - s
+ * sub - Subtract the top two elements of the stack
  * @stack: Double linked list
- * @line_number: File line execution
+ * @line_number: Line counter
  */
-void stack(stack_t **stack, unsigned int line_number)
+void sub(stack_t **stack, unsigned int line_number)
 {
-	(void) line_number;
-	(void) stack;
-
-	var.MODE = 0;
+    if (!*stack || !(*stack)->next)
+    {
+        fprintf(stderr, "L%u: can't sub, stack too short\n",
+            line_number);
+        free_all();
+        exit(EXIT_FAILURE);
+    }
+    (*stack)->next->n = (*stack)->next->n - (*stack)->n;
+    pop(stack, line_number);
 }
 
 /**
- * queue - s
+ * divi - Divide the top two elements of the stack
  * @stack: Double linked list
- * @line_number: File line execution
+ * @line_number: File line counter
  */
-void queue(stack_t **stack, unsigned int line_number)
+void divi(stack_t **stack, unsigned int line_number)
 {
-	(void) line_number;
-	(void) stack;
-
-	var.MODE = 1;
+    if (!*stack || !(*stack)->next)
+    {
+        fprintf(stderr, "L%u: can't div, stack too short\n",
+            line_number);
+        free_all();
+        exit(EXIT_FAILURE);
+    }
+    if ((*stack)->n == 0)
+    {
+        fprintf(stderr, "L%u: division by zero\n", line_number);
+        free_all();
+        exit(EXIT_FAILURE);
+    }
+    (*stack)->next->n = (*stack)->next->n / (*stack)->n;
+    pop(stack, line_number);
 }
